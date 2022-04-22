@@ -4,7 +4,7 @@
     <h5 class="my-3 border-bottom pb-2">로그인</h5>
     <form method="post">
         {{ form.csrf_token }}
-        
+        {% include "form_errors.html" %}
         <div class="mb-3">
             <label for="username">사용자 이름</label>
             <input type="text" class="form-control" name="username" id="username"
