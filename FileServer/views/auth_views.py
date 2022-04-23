@@ -60,6 +60,7 @@ def signup():
             user = User(username = form.username.data
                         , password = generate_password_hash(form.password1.data)
                         , email = form.email.data
+                        , admin_permission = 0
                         , permission = 0
                         , create_date = datetime.now())
             db.session.add(user)
@@ -94,7 +95,7 @@ def login_required(view):
 def admin_permission_required(view):
     @functools.wraps(view)
     def wrapped_view(*args, **kwargs):
-        if g.user.permission != 1:
+        if not g.user.admin_permission:
             flash("권한이 부족합니다")
             return redirect(url_for("main.index"))
 

@@ -24,7 +24,7 @@ def delete(user_id):
     if not user:
         flash("잘못된 유저 아이디 입니다")
     else:
-        if user.permission == 1:
+        if user.admin_permission:
             flash("관리자 계정은 삭제할 수 없습니다")
         else:
             username = user.username
@@ -43,7 +43,7 @@ def enable(user_id):
     if not user:
         flash("잘못된 유저 아이디입니다")
     else:
-        user.permission = 2
+        user.permission = 1
         db.session.add(user)
         db.session.commit()
 
