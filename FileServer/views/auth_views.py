@@ -98,6 +98,6 @@ def admin_permission_required(view):
             flash("권한이 부족합니다")
             return redirect(url_for("main.index"))
 
-        return view(*args, *kwargs)
+        return view(*args, **kwargs)
 
     return wrapped_view
