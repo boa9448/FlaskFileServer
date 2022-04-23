@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% include "flash_errors.html" %}
 <ul>
     <div class="container my-3">
         <table class="table">
@@ -27,7 +28,8 @@
                     {{ permission[user.permission] }}
                 </td>
                 <td>
-                    버튼
+                    <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-danger"
+                        data-uri="{{ url_for('admin.delete', user_id=user.id) }}">탈퇴</a>
                 </td>
             </tr>
             {% endfor %}
@@ -40,4 +42,16 @@
         </table>
     </div>
 </ul>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+const delete_elements = document.getElementsByClassName("delete");
+Array.from(delete_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        if(confirm("정말로 삭제하시겠습니까?")) {
+            location.href = this.dataset.uri;
+        };
+    });
+});
+</script>
 {% endblock %}
