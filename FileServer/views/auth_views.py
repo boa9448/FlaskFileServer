@@ -89,3 +89,15 @@ def login_required(view):
         return view(*args, **kwargs)
 
     return wrapped_view
+
+
+def admin_permission_required(view):
+    @functools.wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if g.user.permission != 1:
+            flash("권한이 부족합니다")
+            return redirect(url_for("main.index"))
+
+        return view(*args, *kwargs)
+
+    return wrapped_view

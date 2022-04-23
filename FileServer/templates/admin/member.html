@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<ul>
+    <div class="container my-3">
+        <table class="table">
+            <thead>
+            <tr class="table-dark">
+                <th>번호</th>
+                <th>이름</th>
+                <th>이메일</th>
+                <th class="col-sm-2">권한</th>
+                <th class="col-sm-1">회원 탈퇴</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if user_list %}
+            {% for user in user_list %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                    {{ user.username }}
+                </td>
+                <td>
+                    {{ user.email }}
+                </td>
+                <td>
+                    {{ permission[user.permission] }}
+                </td>
+                <td>
+                    버튼
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="4">등록된 유저가 없습니다</td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</ul>
+{% endblock %}
