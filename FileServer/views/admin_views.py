@@ -33,3 +33,33 @@ def delete(user_id):
             flash(f"{username} 삭제 성공!")
 
     return redirect(url_for(".member"))
+
+
+@bp.route("enable/<int:user_id>/")
+@login_required
+@admin_permission_required
+def enable(user_id):
+    user = User.query.filter_by(id = user_id).first()
+    if not user:
+        flash("잘못된 유저 아이디입니다")
+    else:
+        user.permission = 2
+        db.session.add(user)
+        db.session.commit()
+
+    return redirect(url_for(".member"))
+
+
+@bp.route("disable/<int:user_id>/")
+@login_required
+@admin_permission_required
+def disable(user_id):
+    user = User.query.filter_by(id = user_id).first()
+    if not user:
+        flash("잘못된 유저 아이디입니다")
+    else:
+        user.permission = 0
+        db.session.add(user)
+        db.session.commit()
+
+    return redirect(url_for(".member"))

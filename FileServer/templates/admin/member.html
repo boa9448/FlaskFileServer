@@ -25,7 +25,15 @@
                     {{ user.email }}
                 </td>
                 <td>
-                    {{ permission[user.permission] }}
+                    {% if user.permission == 0 %}
+                    <a href="{{ url_for('admin.enable', user_id = user.id) }}" class="enable btn btn-sm btn-outline-success"
+                        data-uri="{{ url_for('admin.delete', user_id=user.id) }}">다운로드 허가</a>
+                    {% elif user.permission == 1 %}
+                    <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary">관리자</a>
+                    {% else%}
+                    <a href="{{ url_for('admin.disable', user_id = user.id) }}" class="disable btn btn-sm btn-outline-danger"
+                        data-uri="{{ url_for('admin.delete', user_id=user.id) }}">다운로드 불가</a>
+                    {% endif %}
                 </td>
                 <td>
                     <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-danger"

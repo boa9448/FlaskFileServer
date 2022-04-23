@@ -2,7 +2,7 @@ import os
 from glob import glob
 
 
-from flask import Blueprint, render_template, send_file
+from flask import Blueprint, flash, redirect, render_template, send_file, g 
 from .auth_views import login_required
 
 
@@ -14,6 +14,10 @@ bp = Blueprint("file", __name__, url_prefix = "/file")
 @bp.route("/list/")
 @login_required
 def _list():
+    if g.user.permission == 0:
+        flash("권한이 부족합니다")
+        return render_template("file/file_list.html", file_info_list = list())
+
     file_dir = config.SHARE_FILE_DIR
 
     glob_pattern = os.path.join(file_dir, "*.*")
