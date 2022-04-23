@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+{{ file_list }}
+<ul>
+    {% for file in file_list %}
+        <li>
+            <a href="{{ url_for('file.down', filename = file) }}">{{ file }}</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
