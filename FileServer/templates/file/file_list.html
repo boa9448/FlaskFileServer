@@ -1,11 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-{{ file_list }}
 <ul>
-    {% for file in file_list %}
-        <li>
-            <a href="{{ url_for('file.down', filename = file) }}">{{ file }}</a>
-        </li>
-    {% endfor %}
+    <div class="container my-3">
+        <table class="table">
+            <thead>
+            <tr class="table-dark">
+                <th>번호</th>
+                <th>제목</th>
+                <th class="col-sm-2">파일 크기(KB)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if file_info_list %}
+            {% for file_info in file_info_list %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                    <a href="{{ url_for('file.down', filename = file_info[0]) }}">{{ file_info[0] }}</a>
+                </td>
+                <td>
+                    {{'%0.2f'|format(file_info[1]|float)}}KB
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="3">공유된 파일이 없습니다.</td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
 </ul>
 {% endblock %}

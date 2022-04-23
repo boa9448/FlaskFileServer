@@ -8,4 +8,4 @@ def index():
     if not g.user:
         return redirect(url_for("auth.login"))
 
-    return redirect(url_for("file.list"))
+    return redirect(url_for("file._list"))
