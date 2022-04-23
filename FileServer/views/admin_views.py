@@ -20,7 +20,7 @@ def member():
 @login_required
 @admin_permission_required
 def delete(user_id):
-    user = User.query.filter_by(id=user_id).first()
+    user = User.query.get(user_id)
     if not user:
         flash("잘못된 유저 아이디 입니다")
     else:
@@ -39,7 +39,7 @@ def delete(user_id):
 @login_required
 @admin_permission_required
 def enable(user_id):
-    user = User.query.filter_by(id = user_id).first()
+    user = User.query.get(user_id)
     if not user:
         flash("잘못된 유저 아이디입니다")
     else:
@@ -54,7 +54,7 @@ def enable(user_id):
 @login_required
 @admin_permission_required
 def disable(user_id):
-    user = User.query.filter_by(id = user_id).first()
+    user = User.query.get(user_id)
     if not user:
         flash("잘못된 유저 아이디입니다")
     else:
