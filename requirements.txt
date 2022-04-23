@@ -2,3 +2,4 @@ flask
 flask-migrate
 flask-wtf
 email_validator
+waitress
