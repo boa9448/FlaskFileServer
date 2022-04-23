@@ -30,6 +30,11 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             {% if g.user %}
             <ul class="navbar-nav">
+                {% if g.user.permission == 1%}
+                <li class="nav-item ">
+                    <a class="nav-link" href="{{ url_for('admin.member') }}">사용자 관리</a>
+                </li>
+                {% endif %}
                 <li class="nav-item ">
                     <a class="nav-link" href="{{ url_for('auth.logout') }}">{{ g.user.username }} (로그아웃)</a>
                 </li>
