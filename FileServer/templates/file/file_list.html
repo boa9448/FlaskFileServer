@@ -17,7 +17,7 @@
             <tr>
                 <td>{{ loop.index }}</td>
                 <td>
-                    <a href="{{ url_for('file.down', filename = file_info[0]) }}">{{ file_info[0] }}</a>
+                    <a href="{{ url_for('file.down', filename = file_info[0]) }}" target="_blank">{{ file_info[0] }}</a>
                 </td>
                 <td>
                     {{'%0.2f'|format(file_info[1]|float)}}KB
