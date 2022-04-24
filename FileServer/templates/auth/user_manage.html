@@ -1,57 +1,55 @@
 {% extends "base.html" %}
 {% block content %}
 {% include "flash_errors.html" %}
-<ul>
-    <div class="container my-3">
-        <table class="table">
-            <thead>
-            <tr class="table-dark">
-                <th>번호</th>
-                <th>이름</th>
-                <th>이메일</th>
-                <th class="col-sm-2">권한</th>
-                <th class="col-sm-1">회원 탈퇴</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if user_list %}
-            {% for user in user_list %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>
-                    {{ user.username }}
-                </td>
-                <td>
-                    {{ user.email }}
-                </td>
-                <td>
-                    {% if user.admin_permission %}
-                    <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary">관리자</a>
-                    {% else %}
+<div class="container my-3">
+    <table class="table">
+        <thead>
+        <tr class="table-dark">
+            <th>번호</th>
+            <th>이름</th>
+            <th>이메일</th>
+            <th class="col-sm-2">권한</th>
+            <th class="col-sm-1">회원 탈퇴</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if user_list %}
+        {% for user in user_list %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+                {{ user.username }}
+            </td>
+            <td>
+                {{ user.email }}
+            </td>
+            <td>
+                {% if user.admin_permission %}
+                <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary">관리자</a>
+                {% else %}
 
-                    {% if user.permission == 0 %}
-                    <a href="{{ url_for('auth._permission', user_id = user.id, permission = 1) }}" class="enable btn btn-sm btn-outline-success">다운로드 허용</a>
-                    {% else%}
-                    <a href="{{ url_for('auth._permission', user_id = user.id, permission = 0) }}" class="disable btn btn-sm btn-outline-danger">다운로드 차단</a>
-                    {% endif %}
+                {% if user.permission == 0 %}
+                <a href="{{ url_for('auth._permission', user_id = user.id, permission = 1) }}" class="enable btn btn-sm btn-outline-success">다운로드 허용</a>
+                {% else%}
+                <a href="{{ url_for('auth._permission', user_id = user.id, permission = 0) }}" class="disable btn btn-sm btn-outline-danger">다운로드 차단</a>
+                {% endif %}
 
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-danger"
-                        data-uri="{{ url_for('auth.delete', user_id=user.id) }}">탈퇴</a>
-                </td>
-            </tr>
-            {% endfor %}
-            {% else %}
-            <tr>
-                <td colspan="4">등록된 유저가 없습니다</td>
-            </tr>
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
-</ul>
+                {% endif %}
+            </td>
+            <td>
+                <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-danger"
+                    data-uri="{{ url_for('auth.delete', user_id=user.id) }}">탈퇴</a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="5">등록된 유저가 없습니다</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
 {% block script %}
 <script type='text/javascript'>
