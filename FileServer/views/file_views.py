@@ -1,9 +1,8 @@
 import os
-from glob import glob
 
 
 from flask import Blueprint, flash, redirect, render_template, send_file, g, current_app
-from .auth_views import login_required
+from .auth_views import login_required, admin_permission_required
 from ..models import File
 
 bp = Blueprint("file", __name__, url_prefix = "/file")
