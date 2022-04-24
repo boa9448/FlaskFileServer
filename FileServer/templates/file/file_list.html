@@ -12,15 +12,15 @@
             </tr>
             </thead>
             <tbody>
-            {% if file_info_list %}
-            {% for file_info in file_info_list %}
+            {% if file_list %}
+            {% for file in file_list %}
             <tr>
                 <td>{{ loop.index }}</td>
                 <td>
-                    <a href="{{ url_for('file.down', filename = file_info[0]) }}" target="_blank">{{ file_info[0] }}</a>
+                    <a href="{{ url_for('file.down', file_id = file.id) }}" target="_blank">{{ file.filename }}</a>
                 </td>
                 <td>
-                    {{'%0.2f'|format(file_info[1]|float)}}KB
+                    {{'%0.2f'|format(file.size|float)}}KB
                 </td>
             </tr>
             {% endfor %}

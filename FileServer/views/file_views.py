@@ -4,7 +4,7 @@ from glob import glob
 
 from flask import Blueprint, flash, redirect, render_template, send_file, g, current_app
 from .auth_views import login_required
-
+from ..models import File
 
 bp = Blueprint("file", __name__, url_prefix = "/file")
 
@@ -12,28 +12,22 @@ bp = Blueprint("file", __name__, url_prefix = "/file")
 @bp.route("/list/")
 @login_required
 def _list():
-    if g.user.permission == 0:
-        flash("권한이 부족합니다")
-        return render_template("file/file_list.html", file_info_list = list())
+    if g.user.admin_permission:
+        file_list = File.query.all()
+    else:
+        file_list = File.query.filter(File.permission < g.user.permission)
 
-    file_dir = current_app.config["SHARE_FILE_DIR"]
-
-    glob_pattern = os.path.join(file_dir, "*.*")
-    file_list = glob(glob_pattern)
-
-    file_info_list = list()
-    for file in file_list:
-        name = os.path.split(file)[1]
-        file_size = os.path.getsize(file) / 1024
-        file_info_list.append((name, file_size))
-
-    return render_template("file/file_list.html", file_info_list = file_info_list)
+    return render_template("file/file_list.html", file_list = file_list)
 
 
-@bp.route("/down/<path:filename>")
+@bp.route("/down/<int:file_id>/")
 @login_required
-def down(filename):
+def down(file_id):
+    file = File.query.get(file_id)
     file_dir = current_app.config["SHARE_FILE_DIR"]
-    file_path = os.path.join(file_dir, filename)
+    file_path = os.path.join(file_dir, file.filename)
+    
+    if not os.path.isfile(file_path):
+        return render_template("404.html")
 
     return send_file(file_path)
