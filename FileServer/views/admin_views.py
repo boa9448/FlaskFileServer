@@ -132,7 +132,6 @@ def file_refresh():
 @login_required
 @admin_permission_required
 def file_enable(file_id):
-    print(f"en call : {file_id}")
     file = File.query.get(file_id)
     file.permission = 0
     db.session.add(file)
@@ -145,7 +144,6 @@ def file_enable(file_id):
 @login_required
 @admin_permission_required
 def file_disable(file_id):
-    print(f"dis call : {file_id}")
     file = File.query.get(file_id)
     file.permission = 999
     db.session.add(file)
