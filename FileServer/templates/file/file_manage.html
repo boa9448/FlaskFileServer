@@ -3,7 +3,7 @@
 {% include "flash_errors.html" %}
 <ul>
     <div class="container my-3">
-        <a href="{{ url_for('admin.file_refresh')}}" class="btn btn-sm btn-outline-primary my-3">새로고침</a>
+        <a href="{{ url_for('file.refresh')}}" class="btn btn-sm btn-outline-primary my-3">새로고침</a>
         <table class="table">
             <thead>
             <tr class="table-dark">
@@ -26,9 +26,9 @@
                 </td>
                 <td>
                     {% if file.permission %}
-                    <a href="{{ url_for('admin.file_enable', file_id = file.id)}}" class="btn btn-sm btn-outline-primary">활성</a>
+                    <a href="{{ url_for('file._permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-primary">활성</a>
                     {% else %}
-                    <a href="{{ url_for('admin.file_disable', file_id = file.id)}}" class="btn btn-sm btn-outline-primary">비활성</a>
+                    <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-primary">비활성</a>
                     {% endif %}
                 </td>
             </tr>

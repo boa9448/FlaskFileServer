@@ -32,10 +32,10 @@
             <ul class="navbar-nav">
                 {% if g.user.admin_permission%}
                 <li class="nav-item ">
-                    <a class="nav-link" href="{{ url_for('admin.user_manage') }}">사용자 관리</a>
+                    <a class="nav-link" href="{{ url_for('auth.manage') }}">사용자 관리</a>
                 </li>
                 <li class="nav-item ">
-                    <a class="nav-link" href="{{ url_for('admin.file_manage') }}">파일 관리</a>
+                    <a class="nav-link" href="{{ url_for('file.manage') }}">파일 관리</a>
                 </li>
                 {% endif %}
                 <li class="nav-item ">

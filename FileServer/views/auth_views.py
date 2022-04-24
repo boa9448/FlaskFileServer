@@ -102,3 +102,46 @@ def admin_permission_required(view):
         return view(*args, **kwargs)
 
     return wrapped_view
+
+
+@bp.route("/manage/")
+@login_required
+@admin_permission_required
+def manage():
+    user_list = User.query.all()
+    user_permission_list = ["권한 없음", "관리자", "허가된 사용자"]
+    return render_template("auth/user_manage.html", user_list = user_list, permission = user_permission_list)
+
+
+@bp.route("/delete/<int:user_id>/")
+@login_required
+@admin_permission_required
+def delete(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        flash("잘못된 유저 아이디 입니다")
+    else:
+        if user.admin_permission:
+            flash("관리자 계정은 삭제할 수 없습니다")
+        else:
+            username = user.username
+            db.session.delete(user)
+            db.session.commit()
+            flash(f"{username} 삭제 성공!")
+
+    return redirect(url_for(".manage"))
+
+
+@bp.route("permission/<int:user_id>/<int:permission>/")
+@login_required
+@admin_permission_required
+def _permission(user_id, permission):
+    user = User.query.get(user_id)
+    if not user:
+        flash("잘못된 유저 아이디입니다")
+    else:
+        user.permission = permission
+        db.session.add(user)
+        db.session.commit()
+
+    return redirect(url_for(".manage"))
