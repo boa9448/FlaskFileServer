@@ -1,17 +1,42 @@
 import os
 import hashlib
+import functools
 from glob import glob
+from datetime import datetime
 
 
 from flask import Blueprint, flash, redirect, render_template, send_file, g, current_app, url_for
 
 
 from .auth_views import login_required, admin_permission_required
-from ..models import File
+from ..models import File, FileAccessLog
 from .. import db
 
 
 bp = Blueprint("file", __name__, url_prefix = "/file")
+
+
+def log(file):
+    try:
+        user = g.user
+        file_log = FileAccessLog(user_id = user.id
+                        , file_id = file.id
+                        , file_name = file.filename
+                        , create_date = datetime.now())
+
+        db.session.add(file_log)
+        db.session.commit()
+    except:
+        db.rollback()
+
+def file_log(message, file):
+    def Inner(view):
+        @functools.wraps(view)
+        def wrapper(*args, **kwargs):
+            log(message, file)
+            return view(*args, **kwargs)
+        return wrapper
+    return Inner
 
 
 @bp.route("/list/")
@@ -28,7 +53,12 @@ def _list():
 @bp.route("/down/<int:file_id>/")
 @login_required
 def down(file_id):
+    user = g.user
     file = File.query.get(file_id)
+    log(file)
+    if not user.permission <= file.permission:
+        return render_template("404.html")
+
     file_dir = current_app.config["SHARE_FILE_DIR"]
     file_path = os.path.join(file_dir, file.filename)
     
@@ -105,26 +135,3 @@ def _permission(file_id, permission):
         db.session.commit()
 
     return redirect(url_for("file.manage"))
-
-@bp.route("/fileenable/<int:file_id>")
-@login_required
-@admin_permission_required
-def file_enable(file_id):
-    file = File.query.get(file_id)
-    file.permission = 0
-    db.session.add(file)
-    db.session.commit()
-
-    return redirect(url_for(".file_manage"))
-
-
-@bp.route("/filedisable/<int:file_id>")
-@login_required
-@admin_permission_required
-def file_disable(file_id):
-    file = File.query.get(file_id)
-    file.permission = 999
-    db.session.add(file)
-    db.session.commit()
-
-    return redirect(url_for(".file_manage"))

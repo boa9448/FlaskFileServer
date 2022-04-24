@@ -9,11 +9,32 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import or_
 
 from FileServer import db
-from FileServer.models import User
+from FileServer.models import User, UserLog
 from FileServer.forms import LoginForm, SignupForm
 
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
+
+
+def log(message, user):
+    try:
+        user_log = UserLog(user_id = user.id, level = 20, type = 0
+                , message = f"user id : {user.id}, username : {user.username} {message}"
+                , create_date = datetime.now())
+        db.session.add(user_log)
+        db.session.commit()
+    except:
+        db.rollback()
+
+def auth_log(message, user = None):
+    def Inner(view):
+        @functools.wraps(view)
+        def wrapper(*args, **kwargs):
+            user_ = user if user else g.user
+            log(message, user_)
+            return view(*args, **kwargs)
+        return wrapper
+    return Inner
 
 
 @bp.route("/")
@@ -36,6 +57,7 @@ def login():
             session.clear()
             session["user_id"] = user.id
             _next = request.args.get("next", "")
+            log("로그인 성공", user)
             if _next:
                 return redirect(_next)
 
@@ -46,6 +68,7 @@ def login():
 
 
 @bp.route("/logout/")
+@auth_log("로그아웃 성공")
 def logout():
     session.clear()
     return redirect(url_for("main.index"))
@@ -63,8 +86,12 @@ def signup():
                         , admin_permission = 0
                         , permission = 0
                         , create_date = datetime.now())
+
+
             db.session.add(user)
             db.session.commit()
+
+            log("회원 가입", user)
             return redirect(url_for('.login'))
         
         flash("이미 존재하는 유저입니다")
@@ -97,6 +124,8 @@ def admin_permission_required(view):
     def wrapped_view(*args, **kwargs):
         if not g.user.admin_permission:
             flash("권한이 부족합니다")
+            user = g.user
+            log("잘못된 접근(관리자 페이지 접근 시도)", user)
             return redirect(url_for("main.index"))
 
         return view(*args, **kwargs)
@@ -124,6 +153,7 @@ def delete(user_id):
         if user.admin_permission:
             flash("관리자 계정은 삭제할 수 없습니다")
         else:
+            log("계정 삭제 성공", user)
             username = user.username
             db.session.delete(user)
             db.session.commit()
@@ -140,6 +170,7 @@ def _permission(user_id, permission):
     if not user:
         flash("잘못된 유저 아이디입니다")
     else:
+        log("권한 변경", user)
         user.permission = permission
         db.session.add(user)
         db.session.commit()

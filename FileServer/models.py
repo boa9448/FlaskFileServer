@@ -6,9 +6,9 @@ class User(db.Model):
     username = db.Column(db.String(150), unique = True, nullable = False)
     password = db.Column(db.String(200), nullable = False)
     email = db.Column(db.String(120), unique = True, nullable = False)
-    admin_permission = db.Column(db.Integer, nullable = False, default = 1)
+    admin_permission = db.Column(db.Integer, nullable = False)
     permission = db.Column(db.Integer, nullable = False)
-    create_date = db.Column(db.DateTime(), nullable=False)
+    create_date = db.Column(db.DateTime(), nullable = False)
 
 
 class File(db.Model):
@@ -18,3 +18,19 @@ class File(db.Model):
     size = db.Column(db.Integer, nullable = False)
     permission = db.Column(db.Integer, nullable = False)
     
+
+class UserLog(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, nullable = False)
+    level = db.Column(db.Integer, nullable = False)
+    type = db.Column(db.Integer, nullable = False)
+    message = db.Column(db.String(200), nullable = False)
+    create_date = db.Column(db.DateTime(), nullable = False)
+
+
+class FileAccessLog(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, nullable = False)
+    file_id = db.Column(db.Integer, nullable = False)
+    file_name = db.Column(db.String(200), nullable = False)
+    create_date = db.Column(db.DateTime(), nullable = False)
