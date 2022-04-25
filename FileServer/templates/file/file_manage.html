@@ -34,7 +34,7 @@
                 {% if file.permission %}
                 <a href="{{ url_for('file._permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-primary w-100">공개</a>
                 {% else %}
-                <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-primary w-100">비공개</a>
+                <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-secondary w-100">비공개</a>
                 {% endif %}
             </td>
             <td>
