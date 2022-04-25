@@ -57,9 +57,18 @@ def _list():
 @login_required
 def down(file_id):
     user = g.user
-    file = File.query.get(file_id)
+    user_access_filter = and_(FileAccessPermission.user_id == user.id
+                        , FileAccessPermission.id == file_id)
+    access_filter = and_(user_access_filter , user.permission > File.permission)
+    
+    file = File.query.join(FileAccessPermission)\
+                .filter(access_filter).first()
+
+    if not file:
+        return render_template("404.html")
+    
     log(file)
-    if user.permission <= file.permission:
+    if user.permission <= file.permission and not user.admin_permission:
         return render_template("404.html")
 
     file_dir = current_app.config["SHARE_FILE_DIR"]
