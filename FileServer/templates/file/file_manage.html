@@ -4,8 +4,8 @@
 <div class="container my-3">
     <div class="d-flex justify-content-end">
         <form action="{{ url_for('file.upload') }}" method="POST" enctype = "multipart/form-data">
-            <input class="form-control" type="file" name="form-file" id="form-file">
-            <button type="submit" class="btn btn-primary" id="form-file-upload">전송</button>
+            <input class="form-control visually-hidden" type="file" name="form-file" id="form-file">
+            <button type="submit" class="btn btn-primary visually-hidden" id="form-file-upload">전송</button>
         </form>
         <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary my-3" id="upload">업로드</a>
     </div>
@@ -32,9 +32,9 @@
             </td>
             <td>
                 {% if file.permission %}
-                <a href="{{ url_for('file._permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-primary w-100">공개</a>
+                <a href="{{ url_for('file._permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-secondary w-100">비공개</a>
                 {% else %}
-                <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-secondary w-100">비공개</a>
+                <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-primary w-100">공개</a>
                 {% endif %}
             </td>
             <td>
@@ -60,8 +60,8 @@ $(document).ready(function(){
             location.href = $(this).attr("data-uri");
     });
 
-    $("#form-file").hide();
-    $("#form-file-upload").hide();
+    //$("#form-file").hide();
+    //$("#form-file-upload").hide();
     $("#form-file").change(function(){
         $("#form-file-upload").click()
     });

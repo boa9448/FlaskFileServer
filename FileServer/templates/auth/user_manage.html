@@ -37,9 +37,9 @@
                 {% else %}
 
                 {% if user.permission == 0 %}
-                <a href="{{ url_for('auth._permission', user_id = user.id, permission = 1) }}" class="enable btn btn-sm btn-outline-success">전체 허용</a>
+                <a href="{{ url_for('auth._permission', user_id = user.id, permission = 1) }}" class="enable btn btn-sm btn-outline-danger">전체 차단</a>
                 {% else%}
-                <a href="{{ url_for('auth._permission', user_id = user.id, permission = 0) }}" class="disable btn btn-sm btn-outline-danger">전체 차단</a>
+                <a href="{{ url_for('auth._permission', user_id = user.id, permission = 0) }}" class="disable btn btn-sm btn-outline-success">전체 허용</a>
                 {% endif %}
 
                 {% endif %}
