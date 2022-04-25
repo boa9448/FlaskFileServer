@@ -45,7 +45,7 @@ def _list():
     if g.user.admin_permission:
         file_list = File.query.all()
     else:
-        file_list = File.query.filter(File.permission < g.user.permission)
+        file_list = File.query.filter(File.permission < g.user.permission).all()
 
     return render_template("file/file_list.html", file_list = file_list)
 

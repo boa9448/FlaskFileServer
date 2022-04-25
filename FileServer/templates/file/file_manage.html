@@ -14,7 +14,7 @@
             </tr>
             </thead>
             <tbody>
-            {% if file_list.count %}
+            {% if file_list %}
             {% for file in file_list %}
             <tr>
                 <td>{{ loop.index }}</td>
@@ -22,7 +22,7 @@
                     <a href="{{ url_for('file.down', file_id = file.id) }}" target="_blank">{{ file.filename }}</a>
                 </td>
                 <td>
-                    {{'%0.2f'|format(file.size|float)}}KB
+                    {{'%0.2f'|format(file.size/1024|float)}}KB
                 </td>
                 <td>
                     {% if file.permission %}
