@@ -7,9 +7,11 @@ from datetime import datetime
 
 from flask import Blueprint, flash, redirect, render_template, request, send_file, g, current_app, url_for
 from werkzeug.utils import secure_filename
+from sqlalchemy import or_, and_
+
 
 from .auth_views import login_required, admin_permission_required
-from ..models import File, FileAccessLog
+from ..models import File, FileAccessLog, FileAccessPermission
 from .. import db
 
 
@@ -45,7 +47,8 @@ def _list():
     if g.user.admin_permission:
         file_list = File.query.all()
     else:
-        file_list = File.query.filter(File.permission < g.user.permission).all()
+        file_list = File.query.join(FileAccessPermission)\
+                        .filter(and_(FileAccessPermission.user_id == g.user.id, File.permission < g.user.permission)).all()
 
     return render_template("file/file_list.html", file_list = file_list)
 
