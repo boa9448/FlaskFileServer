@@ -1,6 +1,6 @@
 import functools
 from datetime import datetime
-from operator import or_
+from operator import or_, and_
 
 
 from flask import Blueprint, render_template, request, url_for, session, g, flash
@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import or_
 
 from FileServer import db
-from FileServer.models import User, UserLog, File
+from FileServer.models import FileAccessPermission, User, UserLog, File
 from FileServer.forms import LoginForm, SignupForm
 
 
@@ -178,9 +178,51 @@ def _permission(user_id, permission):
     return redirect(url_for(".manage"))
 
 
-@bp.route("/file/permission/<int:user_id>")
+def toggle_file_access_permission(user_id, file_id):
+    user = User.query.get(user_id)
+    if not user:
+        flash("잘못된 유저 아이디")
+        return
+
+    file_acc_per = FileAccessPermission.query.filter(and_(FileAccessPermission.user_id == user_id
+                                                        , FileAccessPermission.file_id == file_id)).first()
+    if file_acc_per:
+        try:
+            db.session.delete(file_acc_per)
+            db.session.commit()
+        except:
+            db.session.rollback()
+            flash("권한 설정에 실패했습니다")
+
+        return
+
+    try:
+        file_acc_per = FileAccessPermission(user_id = user_id
+                                            , file_id = file_id
+                                            , create_date = datetime.now())
+
+        db.session.add(file_acc_per)
+        db.session.commit()
+    except:
+        flash("권한 설정에 실패했습니다")
+        db.session.rollback()
+
+
+@bp.route("/file/permission/<int:user_id>/")
+@bp.route("/file/permission/<int:user_id>/<int:file_id>/")
 @login_required
 @admin_permission_required
-def file_permission(user_id):
+def file_permission(user_id, file_id = None):
     file_list = File.query.all()
-    return render_template("auth/user_file_manage.html", file_list = file_list)
+    
+    #WDW : 최적화 필요
+    file_info_list = list()
+    for idx, file in enumerate(file_list, 1):
+        result = FileAccessPermission.query.filter_by(user_id = user_id, file_id = idx).first()
+        file_info_list.append((file, True if result else False))
+
+    if file_id:
+        toggle_file_access_permission(user_id, file_id)
+        return redirect(url_for(".file_permission", user_id = user_id))
+
+    return render_template("auth/user_file_manage.html", user_id = user_id, file_list = file_info_list)
