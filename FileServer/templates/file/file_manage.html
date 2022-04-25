@@ -26,9 +26,9 @@
                 </td>
                 <td>
                     {% if file.permission %}
-                    <a href="{{ url_for('file._permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-primary">활성</a>
+                    <a href="{{ url_for('file._permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-primary">공개하기</a>
                     {% else %}
-                    <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-primary">비활성</a>
+                    <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-primary">비공개하기</a>
                     {% endif %}
                 </td>
             </tr>
