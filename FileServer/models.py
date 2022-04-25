@@ -34,3 +34,12 @@ class FileAccessLog(db.Model):
     file_id = db.Column(db.Integer, nullable = False)
     file_name = db.Column(db.String(200), nullable = False)
     create_date = db.Column(db.DateTime(), nullable = False)
+
+
+class FileAccessPermission(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"))
+    user = db.relationship("User", backref = db.backref("file_access_permision_set"))
+    file_id = db.Column(db.Integer, db.ForeignKey("file.id", ondelete="CASCADE"))
+    file = db.relationship("File", backref = db.backref("file_set"))
+    create_date = db.Column(db.DateTime(), nullable = False)
