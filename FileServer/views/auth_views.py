@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import or_
 
 from FileServer import db
-from FileServer.models import User, UserLog
+from FileServer.models import User, UserLog, File
 from FileServer.forms import LoginForm, SignupForm
 
 
@@ -162,7 +162,7 @@ def delete(user_id):
     return redirect(url_for(".manage"))
 
 
-@bp.route("permission/<int:user_id>/<int:permission>/")
+@bp.route("/permission/<int:user_id>/<int:permission>/")
 @login_required
 @admin_permission_required
 def _permission(user_id, permission):
@@ -176,3 +176,11 @@ def _permission(user_id, permission):
         db.session.commit()
 
     return redirect(url_for(".manage"))
+
+
+@bp.route("/file/permission/<int:user_id>")
+@login_required
+@admin_permission_required
+def file_permission(user_id):
+    file_list = File.query.all()
+    return render_template("auth/user_file_manage.html", file_list = file_list)
