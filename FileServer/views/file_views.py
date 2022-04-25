@@ -5,8 +5,8 @@ from glob import glob
 from datetime import datetime
 
 
-from flask import Blueprint, flash, redirect, render_template, send_file, g, current_app, url_for
-
+from flask import Blueprint, flash, redirect, render_template, request, send_file, g, current_app, url_for
+from werkzeug.utils import secure_filename
 
 from .auth_views import login_required, admin_permission_required
 from ..models import File, FileAccessLog
@@ -135,3 +135,68 @@ def _permission(file_id, permission):
         db.session.commit()
 
     return redirect(url_for("file.manage"))
+
+
+@bp.route("/delete/<int:file_id>/")
+@login_required
+@admin_permission_required
+def delete(file_id):
+    file = File.query.get(file_id)
+    if not file:
+        flash("잘못된 파일 아이디")
+        return redirect(url_for(".manage"))
+
+    file_dir = current_app.config["SHARE_FILE_DIR"]
+    file_path = os.path.join(file_dir, file.filename)
+    file_path = os.path.abspath(file_path)
+    
+    try:
+        if not os.path.isfile(file_path):
+            flash("존재하지 않는 파일입니다")
+        else:
+            os.remove(file_path)
+
+        db.session.delete(file)
+        db.session.commit()
+    except Exception as e:
+        flash("파일 삭제에 실패했습니다")
+        db.session.rollback()
+
+    return redirect(url_for(".manage"))
+
+
+@bp.route("/upload/", methods = ["GET", "POST"])
+@login_required
+@admin_permission_required
+def upload():
+    if request.method == "POST":
+        if "form-file" not in  request.files:
+            flash("잘못된 파일입니다")
+            return redirect(url_for(".manage"))
+
+        file = request.files["form-file"]
+        if file.filename == "":
+            flash("파일이 선택되지 않았습니다")
+            return redirect(url_for(".manage"))
+
+        if file:
+            filename = secure_filename(file.filename)
+
+            file_dir = current_app.config["SHARE_FILE_DIR"]
+            file_path = os.path.join(file_dir, filename)
+            file_path = os.path.abspath(file_path)
+
+            file.save(file_path)
+
+            file_hash = md5_file_hash(file_path)
+            file = File(filename = file.filename
+                        , hash = file_hash
+                        , size = os.path.getsize(file_path)
+                        , permission = 999)
+
+            db.session.add(file)
+            db.session.commit()
+            return redirect(url_for(".manage"))
+
+    flash("잘못된 요청")
+    return redirect(url_for(".manage"))
