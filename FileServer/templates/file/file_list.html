@@ -19,7 +19,7 @@
                 <a href="{{ url_for('file.down', file_id = file.id) }}" target="_blank">{{ file.filename }}</a>
             </td>
             <td>
-                {{'%0.2f'|format(file.size|float)}}KB
+                {{'%0.2f'|format(file.size/1024|float)}}KB
             </td>
         </tr>
         {% endfor %}
