@@ -1,58 +1,56 @@
 {% extends "base.html" %}
 {% block content %}
 {% include "flash_errors.html" %}
-<ul>
-    <div class="container my-3">
-        <div class="d-flex justify-content-end">
-            <form action="{{ url_for('file.upload') }}" method="POST" enctype = "multipart/form-data">
-                <input class="form-control" type="file" name="form-file" id="form-file">
-                <button type="submit" class="btn btn-primary" id="form-file-upload">전송</button>
-            </form>
-            <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary my-3" id="upload">업로드</a>
-        </div>
-        <table class="table text-center">
-            <thead>
-            <tr class="table-dark">
-                <th class="col-sm-1">번호</th>
-                <th>제목</th>
-                <th class="col-sm-2">파일 크기(KB)</th>
-                <th class="col-sm-1">공개 여부</th>
-                <th class="col-sm-1">삭제</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if file_list %}
-            {% for file in file_list %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>
-                    <a href="{{ url_for('file.down', file_id = file.id) }}" target="_blank">{{ file.filename }}</a>
-                </td>
-                <td>
-                    {{'%0.2f'|format(file.size/1024|float)}}KB
-                </td>
-                <td>
-                    {% if file.permission %}
-                    <a href="{{ url_for('file._permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-primary w-100">공개</a>
-                    {% else %}
-                    <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-primary w-100">비공개</a>
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-danger w-100"
-                        data-uri="{{ url_for('file.delete', file_id=file.id) }}">삭제</a>
-                </td>
-            </tr>
-            {% endfor %}
-            {% else %}
-            <tr>
-                <td colspan="5">등록된 파일이 없습니다.</td>
-            </tr>
-            {% endif %}
-            </tbody>
-        </table>
+<div class="container my-3">
+    <div class="d-flex justify-content-end">
+        <form action="{{ url_for('file.upload') }}" method="POST" enctype = "multipart/form-data">
+            <input class="form-control" type="file" name="form-file" id="form-file">
+            <button type="submit" class="btn btn-primary" id="form-file-upload">전송</button>
+        </form>
+        <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary my-3" id="upload">업로드</a>
     </div>
-</ul>
+    <table class="table text-center">
+        <thead>
+        <tr class="table-dark">
+            <th class="col-sm-1">번호</th>
+            <th>제목</th>
+            <th class="col-sm-2">파일 크기(KB)</th>
+            <th class="col-sm-1">공개 여부</th>
+            <th class="col-sm-1">삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if file_list %}
+        {% for file in file_list %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+                <a href="{{ url_for('file.down', file_id = file.id) }}" target="_blank">{{ file.filename }}</a>
+            </td>
+            <td>
+                {{'%0.2f'|format(file.size/1024|float)}}KB
+            </td>
+            <td>
+                {% if file.permission %}
+                <a href="{{ url_for('file._permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-primary w-100">공개</a>
+                {% else %}
+                <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-primary w-100">비공개</a>
+                {% endif %}
+            </td>
+            <td>
+                <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-danger w-100"
+                    data-uri="{{ url_for('file.delete', file_id=file.id) }}">삭제</a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="5">등록된 파일이 없습니다.</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
 {% block script %}
 <script type='text/javascript'>

@@ -39,7 +39,7 @@ class FileAccessLog(db.Model):
 class FileAccessPermission(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"))
-    user = db.relationship("User", backref = db.backref("file_access_permision_set"))
+    user = db.relationship("User", backref = db.backref("file_access_permision_set", cascade='all, delete-orphan'))
     file_id = db.Column(db.Integer, db.ForeignKey("file.id", ondelete="CASCADE"))
-    file = db.relationship("File", backref = db.backref("file_set"))
+    file = db.relationship("File", backref = db.backref("file_set", cascade='all, delete-orphan'))
     create_date = db.Column(db.DateTime(), nullable = False)
