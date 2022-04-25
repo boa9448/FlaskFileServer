@@ -56,7 +56,7 @@ def down(file_id):
     user = g.user
     file = File.query.get(file_id)
     log(file)
-    if not user.permission <= file.permission:
+    if user.permission <= file.permission:
         return render_template("404.html")
 
     file_dir = current_app.config["SHARE_FILE_DIR"]
