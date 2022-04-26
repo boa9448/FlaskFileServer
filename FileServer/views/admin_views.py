@@ -113,8 +113,11 @@ def user_file_permission(user_id):
         toggle_file_access_permission(user_id, file_id)
         return redirect(url_for(".user_file_permission", user_id = user_id))
 
-    file_info_list = File.query.outerjoin(FileAccessPermission, File.id == FileAccessPermission.file_id)\
-                                .add_columns(File.id, File.filename, File.size, FileAccessPermission.user_id).all()
+    q = File.query.outerjoin(FileAccessPermission, and_(File.id == FileAccessPermission.file_id
+                            , FileAccessPermission.user_id == user_id))\
+                .add_columns(File.id, File.filename, File.size, FileAccessPermission.user_id)
+    
+    file_info_list = q.all()
 
     return render_template("admin/admin_user_file_permission.html", user_id = user_id, file_list = file_info_list)
 
