@@ -78,5 +78,4 @@ def down(file_id):
     if not os.path.exists(file_path):
         return render_template("404.html")
 
-    print(999)
     return send_file(file_path)
