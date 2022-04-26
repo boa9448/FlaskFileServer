@@ -3,7 +3,7 @@
 {% include "flash_errors.html" %}
 <div class="container my-3">
     <div class="d-flex justify-content-end">
-        <form action="{{ url_for('file.upload') }}" method="POST" enctype = "multipart/form-data">
+        <form action="{{ url_for('admin.file_upload') }}" method="POST" enctype = "multipart/form-data">
             <input class="form-control visually-hidden" type="file" name="form-file" id="form-file">
             <button type="submit" class="btn btn-primary visually-hidden" id="form-file-upload">전송</button>
         </form>
@@ -32,14 +32,14 @@
             </td>
             <td>
                 {% if file.permission %}
-                <a href="{{ url_for('file._permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-secondary w-100">비공개</a>
+                <a href="{{ url_for('admin.file_permission', file_id = file.id, permission = 0)}}" class="btn btn-sm btn-outline-secondary w-100">비공개</a>
                 {% else %}
-                <a href="{{ url_for('file._permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-primary w-100">공개</a>
+                <a href="{{ url_for('admin.file_permission', file_id = file.id, permission = 1)}}" class="btn btn-sm btn-outline-primary w-100">공개</a>
                 {% endif %}
             </td>
             <td>
                 <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-danger w-100"
-                    data-uri="{{ url_for('file.delete', file_id=file.id) }}">삭제</a>
+                    data-uri="{{ url_for('admin.file_delete', file_id=file.id) }}">삭제</a>
             </td>
         </tr>
         {% endfor %}

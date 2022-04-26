@@ -2,14 +2,17 @@
 {% block content %}
 {% include "flash_errors.html" %}
 <div class="container my-3">
+    <div class="d-flex justify-content-end">
+        <a href="{{ url_for('admin.user_permission_close') }}" class="btn btn-sm btn-outline-primary my-3" id="upload">전부 차단</a>
+    </div>
     <table class="table">
         <thead>
         <tr class="table-dark">
-            <th>번호</th>
+            <th class="col-sm-1">번호</th>
             <th>이름</th>
             <th>이메일</th>
-            <th>파일 권한</th>
-            <th class="col-sm-2">접근 권한</th>
+            <th class="col-sm-1">파일 권한</th>
+            <th class="col-sm-1">접근 권한</th>
             <th class="col-sm-1">회원 탈퇴</th>
         </tr>
         </thead>
@@ -26,27 +29,27 @@
             </td>
             <td>
                 {% if user.admin_permission %}
-                <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary">관리자</a>
+                <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary w-100">관리자</a>
                 {% else %}
-                <a href="{{ url_for('auth.file_permission', user_id = user.id) }}" class="btn btn-sm btn-outline-secondary file-permission">파일 설정</a>
+                <a href="{{ url_for('admin.user_file_permission', user_id = user.id) }}" class="btn btn-sm btn-outline-secondary file-permission w-100">파일 설정</a>
                 {% endif %}
             </td>
             <td>
                 {% if user.admin_permission %}
-                <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary">관리자</a>
+                <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary w-100">관리자</a>
                 {% else %}
 
                 {% if user.permission == 0 %}
-                <a href="{{ url_for('auth._permission', user_id = user.id, permission = 1) }}" class="enable btn btn-sm btn-outline-danger">전체 차단</a>
+                <a href="{{ url_for('admin.user_permission', user_id = user.id, permission = 1) }}" class="enable btn btn-sm btn-outline-danger w-100">전체 차단</a>
                 {% else%}
-                <a href="{{ url_for('auth._permission', user_id = user.id, permission = 0) }}" class="disable btn btn-sm btn-outline-success">전체 허용</a>
+                <a href="{{ url_for('admin.user_permission', user_id = user.id, permission = 0) }}" class="disable btn btn-sm btn-outline-success w-100">전체 허용</a>
                 {% endif %}
 
                 {% endif %}
             </td>
             <td>
-                <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-danger"
-                    data-uri="{{ url_for('auth.delete', user_id=user.id) }}">탈퇴</a>
+                <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-danger w-100"
+                    data-uri="{{ url_for('admin.user_delete', user_id = user.id) }}">탈퇴</a>
             </td>
         </tr>
         {% endfor %}

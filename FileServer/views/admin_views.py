@@ -5,13 +5,12 @@ from datetime import datetime
 
 
 from flask import url_for, redirect, flash, g, render_template, Blueprint, current_app, request
-from werkzeug.utils import secure_filename
 from sqlalchemy import and_
 
 
 from .. import db
 from ..models import User, File, FileAccessPermission
-from auth_views import login_required, admin_permission_required, log
+from .auth_views import login_required, admin_permission_required, log
 
 
 bp = Blueprint("admin", __name__, url_prefix = "/admin")
@@ -22,7 +21,7 @@ bp = Blueprint("admin", __name__, url_prefix = "/admin")
 @admin_permission_required
 def user_list():
     user_list = User.query.all()
-    return render_template("auth/user_manage.html", user_list = user_list)
+    return render_template("admin/admin_user_manage.html", user_list = user_list)
 
 
 @bp.route("/user/delete/<int:user_id>/")
@@ -45,15 +44,10 @@ def user_delete(user_id):
     return redirect(url_for(".user_list"))
 
 
-@bp.route("/user/permission/<int:user_id>/")
+@bp.route("/user/permission/<int:user_id>/<int:permission>/")
 @login_required
 @admin_permission_required
-def user_permission(user_id):
-    permission = request.args.get("permission", None)
-    if permission is None:
-        flash("잘못된 권한입니다")
-        return redirect(url_for(".user_list"))
-
+def user_permission(user_id, permission):
     user = User.query.get_or_404(user_id)
     if not user:
         flash("잘못된 유저 아이디입니다")
@@ -65,6 +59,19 @@ def user_permission(user_id):
 
     return redirect(url_for(".user_list"))
 
+
+@bp.route("/user/permission/close")
+@login_required
+@admin_permission_required
+def user_permission_close():
+    try:
+        User.query.update({User.permission : 0})
+        db.session.commit()
+    except RuntimeError:
+        flash("모든 권한 변경 실패")
+        db.session.rollback()
+
+    return redirect(url_for(".user_list"))
 
 def toggle_file_access_permission(user_id, file_id):
     user = User.query.get(user_id)
@@ -101,26 +108,23 @@ def toggle_file_access_permission(user_id, file_id):
 @admin_permission_required
 def user_file_permission(user_id):
     file_id = request.args.get("file_id", None)
-    file_list = File.query.all()
     
     if file_id:
         toggle_file_access_permission(user_id, file_id)
+        return redirect(url_for(".user_file_permission", user_id = user_id))
 
-    #WDW : 최적화 필요
-    file_info_list = list()
-    for idx, file in enumerate(file_list, 1):
-        result = FileAccessPermission.query.filter_by(user_id = user_id, file_id = idx).first()
-        file_info_list.append((file, True if result else False))
+    file_info_list = File.query.outerjoin(FileAccessPermission, File.id == FileAccessPermission.file_id)\
+                                .add_columns(File.id, File.filename, File.size, FileAccessPermission.user_id).all()
 
-    return render_template("auth/user_file_manage.html", user_id = user_id, file_list = file_info_list)
+    return render_template("admin/admin_user_file_permission.html", user_id = user_id, file_list = file_info_list)
 
 
-@bp.route("/manage/")
+@bp.route("/file/list/")
 @login_required
 @admin_permission_required
-def manage():
+def file_list():
     file_list = File.query.all()
-    return render_template("file/file_manage.html", file_list = file_list)
+    return render_template("admin/admin_file_manage.html", file_list = file_list)
 
 
 #https://stackoverflow.com/questions/16874598/how-do-i-calculate-the-md5-checksum-of-a-file-in-python
@@ -133,10 +137,10 @@ def md5_file_hash(file_name):
     return file_hash.hexdigest()
 
 
-@bp.route("/refresh/")
+@bp.route("/file/refresh/")
 @login_required
 @admin_permission_required
-def refresh():
+def list_refresh():
     file_dir = current_app.config["SHARE_FILE_DIR"]
     glob_pattern = os.path.join(file_dir, "*.*")
     disk_file_list = glob(glob_pattern)
@@ -167,11 +171,11 @@ def refresh():
     except:
         db.session.rollback()
 
-    return redirect(url_for(".manage"))
+    return redirect(url_for(".file_list"))
 
 
 @bp.route("/permission/<int:file_id>/<int:permission>/")
-def _permission(file_id, permission):
+def file_permission(file_id, permission):
     file = File.query.get(file_id)
     if not file:
         flash("잘못된 파일 아이디")
@@ -180,17 +184,17 @@ def _permission(file_id, permission):
         db.session.add(file)
         db.session.commit()
 
-    return redirect(url_for("file.manage"))
+    return redirect(url_for(".file_list"))
 
 
-@bp.route("/delete/<int:file_id>/")
+@bp.route("/file/delete/<int:file_id>/")
 @login_required
 @admin_permission_required
-def delete(file_id):
+def file_delete(file_id):
     file = File.query.get(file_id)
     if not file:
         flash("잘못된 파일 아이디")
-        return redirect(url_for(".manage"))
+        return redirect(url_for(".file_list"))
 
     file_dir = current_app.config["SHARE_FILE_DIR"]
     file_path = os.path.join(file_dir, file.filename)
@@ -208,41 +212,41 @@ def delete(file_id):
         flash("파일 삭제에 실패했습니다")
         db.session.rollback()
 
-    return redirect(url_for(".manage"))
+    return redirect(url_for(".file_list"))
 
 
-@bp.route("/upload/", methods = ["GET", "POST"])
+@bp.route("/file/upload/", methods = ["GET", "POST"])
 @login_required
 @admin_permission_required
-def upload():
+def file_upload():
     if request.method == "POST":
         if "form-file" not in  request.files:
             flash("잘못된 파일입니다")
-            return redirect(url_for(".manage"))
+            return redirect(url_for(".file_list"))
 
         file = request.files["form-file"]
         if file.filename == "":
             flash("파일이 선택되지 않았습니다")
-            return redirect(url_for(".manage"))
+            return redirect(url_for(".file_list"))
 
         if file:
-            filename = secure_filename(file.filename)
-
             file_dir = current_app.config["SHARE_FILE_DIR"]
+            filename = os.path.split(file.filename)[-1]
+
             file_path = os.path.join(file_dir, filename)
             file_path = os.path.abspath(file_path)
 
             file.save(file_path)
 
             file_hash = md5_file_hash(file_path)
-            file = File(filename = file.filename
+            file = File(filename = filename
                         , hash = file_hash
                         , size = os.path.getsize(file_path)
                         , permission = 999)
 
             db.session.add(file)
             db.session.commit()
-            return redirect(url_for(".manage"))
+            return redirect(url_for(".file_list"))
 
     flash("잘못된 요청")
-    return redirect(url_for(".manage"))
+    return redirect(url_for(".file_list"))

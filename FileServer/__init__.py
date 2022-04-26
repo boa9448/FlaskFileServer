@@ -30,11 +30,12 @@ def create_app():
         migrate.init_app(app, db)
 
     from . import models
-    from .views import main_views, auth_views, file_views
+    from .views import main_views, auth_views, file_views, admin_views
     app.register_error_handler(404, page_not_found)
     app.register_blueprint(main_views.bp)
     app.register_blueprint(auth_views.bp)
     app.register_blueprint(file_views.bp)
+    app.register_blueprint(admin_views.bp)
 
     return app
 

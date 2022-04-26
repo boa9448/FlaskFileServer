@@ -11,11 +11,11 @@
         </thead>
         <tbody>
         {% if file_list %}
-        {% for file, val in file_list %}
+        {% for file in file_list %}
         <tr>
             <td>
                 <div class="form-check form-switch">
-                    <input class="form-check-input file-permission w-100" type="checkbox" data-file-id="{{ file.id }}" {{ "checked" if val else "" }}>
+                    <input class="form-check-input file-permission w-100" type="checkbox" data-file-id="{{ file.id }}" {{ "checked" if file.user_id else "" }}>
                 </div>
             </td>
             <td>
@@ -41,7 +41,7 @@
         $(".file-permission").click(function(){
             var user_id = "{{ user_id }}";
             var file_id = $(this).attr("data-file-id");
-            location.href = `{{ url_for('auth.file_permission', user_id = user_id) }}${file_id}`;
+            location.href = `{{ url_for('admin.user_file_permission', user_id = user_id) }}?file_id=${file_id}`;
         });
     });
 </script>
