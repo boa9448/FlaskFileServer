@@ -26,14 +26,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = "50803eb5f7ad8be976c2c15488c2bac99cf9426c96968fc911ead851ae8773a7"
 ```
 
-데이터 베이스를 초기화합니다
-```
-(venv) user_repos\FlaskFileServer>flask db init
-(venv) user_repos\FlaskFileServer>flask db migrate
-(venv) user_repos\FlaskFileServer>flask db upgrade
-```
-
-
 ## 윈도우  
 ```
 #가상환경 생성 후 진입
@@ -45,6 +37,13 @@ python -m pip install -r requirements.txt
 
 ```
 
+데이터 베이스를 초기화합니다
+```
+(venv) user_repos\FlaskFileServer>flask db init
+(venv) user_repos\FlaskFileServer>flask db migrate
+(venv) user_repos\FlaskFileServer>flask db upgrade
+```
+
 ## 리눅스  
 ```
 #가상환경 생성 후 진입
@@ -54,6 +53,13 @@ venv\bin\activate
 #종속성 설치
 python -m pip install -r requirements.txt
 
+```
+
+데이터 베이스를 초기화합니다
+```
+(venv) user_repos\FlaskFileServer>flask db init
+(venv) user_repos\FlaskFileServer>flask db migrate
+(venv) user_repos\FlaskFileServer>flask db upgrade
 ```
 
 
